@@ -1,0 +1,3 @@
+<launch>
+   <node name="navigator" pkg="mosaic_navigation" type="simple_nav.py" />
+</launch>

@@ -1,0 +1,19 @@
+<package>
+  <description brief="mosaic_navigation">
+
+     mosaic_navigation
+
+  </description>
+  <author>Luke Teacy</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/mosaic_navigation</url>
+  <depend package="rospy"/>
+  <depend package="actionlib_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="nav_msgs"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+
