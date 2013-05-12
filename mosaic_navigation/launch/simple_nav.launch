@@ -4,5 +4,9 @@
       <remap from="reset" to="/ardrone/reset"/>
       <remap from="land" to="/ardrone/land"/>
       <remap from="control" to="/cmd_vel"/>
+      <param name="publish_frequency" type="double" value="2.0" />
+      <param name="min_speed" type="double" value="0.0" />
+      <param name="max_speed" type="double" value="1.0" />
+      <param name="speed_scale" type="double" value="0.2" />
    </node>
 </launch>
