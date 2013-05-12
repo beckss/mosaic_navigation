@@ -19,7 +19,7 @@ goal_lock = Lock()
 goal = None
 
 def state_callback(msg):
-   rospy.loginfo(rospy.get_name() + " received new state: %s" % msg)
+   rospy.logdebug(rospy.get_name() + " received new state: %s" % msg)
    with state_lock:
       global state
       pos = msg.pose.pose.position
@@ -68,11 +68,11 @@ def move_uav(pub,curState,curGoal):
    speed = min(max(dist*speedScale,minSpeed),maxSpeed)
    acceleration = direction*speed
 
-   rospy.logwarn("position: %s" % curState.position)
-   rospy.logwarn("target: %s" % curGoal.position)
-   rospy.logwarn("dist: %s" % dist)
-   rospy.logwarn("speed: %s" % speed)
-   rospy.logwarn("acceleration: %s" % acceleration)
+   rospy.logdebug("position: %s" % curState.position)
+   rospy.logdebug("target: %s" % curGoal.position)
+   rospy.logdebug("dist: %s" % dist)
+   rospy.logdebug("speed: %s" % speed)
+   rospy.logdebug("acceleration: %s" % acceleration)
 
    msg = Twist()
    msg.angular = Vector3(0,0,0)
@@ -96,7 +96,7 @@ def simple_nav():
 
    minSpeed = rospy.get_param('min_speed', 0)
    maxSpeed = rospy.get_param('max_speed', 1)
-   speedScale = rospy.get_param('speedScale', 0.5)
+   speedScale = rospy.get_param('speed_scale', 0.5)
 
    ns = Namespace()  
    ns.goal = None
