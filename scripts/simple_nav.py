@@ -25,8 +25,8 @@ def state_callback(msg):
       pos = msg.pose.pose.position
       att = msg.pose.pose.orientation
       state = Namespace()
-      state.position = np.array([att.x, att.y, att.z, att.w])
-      state.orientation = np.array([pos.x, pos.y, pos.z])
+      state.orientation = np.array([att.x, att.y, att.z, att.w])
+      state.position = np.array([pos.x, pos.y, pos.z])
 
 def goal_callback(msg):
    rospy.loginfo(rospy.get_name() + " received new goal: %s" % msg)
@@ -35,8 +35,8 @@ def goal_callback(msg):
       pos = msg.position
       att = msg.orientation
       goal = Namespace()
-      goal.position = np.array([att.x, att.y, att.z, att.w])
-      goal.orientation = np.array([pos.x, pos.y, pos.z])
+      goal.orientation = np.array([att.x, att.y, att.z, att.w])
+      goal.position= np.array([pos.x, pos.y, pos.z])
 
 def reset_callback(msg):
    rospy.loginfo(rospy.get_name() + " UAV reset requested - setting goal to none.")
@@ -61,8 +61,30 @@ def stop_uav(pub):
 # Tells the UAV to move toward the current goal
 # orientation is currently ignored, but at some point we will want to set yaw
 def move_uav(pub,curState,curGoal):
-   dist = curGoal.position-curState.position
-   rospy.loginfo("Distance to target: %s" % dist)
+   diff = curGoal.position-curState.position
+   dist = np.linalg.norm(diff)
+   direction = diff/dist
+
+   targetSpeed = 2
+   maxSpeed = 1
+   minSpeed = 0
+
+   speed = min(max(dist/targetSpeed,minSpeed),maxSpeed)
+   acceleration = direction*speed
+
+   rospy.logwarn("position: %s" % curState.position)
+   rospy.logwarn("target: %s" % curGoal.position)
+   rospy.logwarn("dist: %s" % dist)
+   rospy.logwarn("speed: %s" % speed)
+   rospy.logwarn("acceleration: %s" % acceleration)
+
+   msg = Twist()
+   msg.angular = Vector3(0,0,0)
+   msg.linear = Vector3()
+   msg.linear.x = acceleration[0]
+   msg.linear.y = acceleration[1]
+   msg.linear.z = acceleration[2]
+   pub.publish(msg)
 
 def simple_nav():
    pub = rospy.Publisher('control', Twist)
