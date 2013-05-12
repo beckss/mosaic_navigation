@@ -22,7 +22,11 @@ def state_callback(msg):
    rospy.loginfo(rospy.get_name() + " received new state: %s" % msg)
    with state_lock:
       global state
-      state = msg
+      pos = msg.pose.pose.position
+      att = msg.pose.pose.orientation
+      state = Namespace()
+      state.position = np.array([att.x, att.y, att.z, att.w])
+      state.orientation = np.array([pos.x, pos.y, pos.z])
 
 def goal_callback(msg):
    rospy.loginfo(rospy.get_name() + " received new goal: %s" % msg)
@@ -55,8 +59,10 @@ def stop_uav(pub):
    pub.publish(msg)
    
 # Tells the UAV to move toward the current goal
+# orientation is currently ignored, but at some point we will want to set yaw
 def move_uav(pub,curState,curGoal):
-   pass
+   dist = curGoal.position-curState.position
+   rospy.loginfo("Distance to target: %s" % dist)
 
 def simple_nav():
    pub = rospy.Publisher('control', Twist)
