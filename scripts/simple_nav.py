@@ -65,11 +65,7 @@ def move_uav(pub,curState,curGoal):
    dist = np.linalg.norm(diff)
    direction = diff/dist
 
-   targetSpeed = 2
-   maxSpeed = 1
-   minSpeed = 0
-
-   speed = min(max(dist/targetSpeed,minSpeed),maxSpeed)
+   speed = min(max(dist*speedScale,minSpeed),maxSpeed)
    acceleration = direction*speed
 
    rospy.logwarn("position: %s" % curState.position)
@@ -93,6 +89,14 @@ def simple_nav():
    rospy.Subscriber("goal", Pose, goal_callback)
    rospy.Subscriber("land", Empty, land_callback)
    rospy.Subscriber("reset", Empty, reset_callback)
+
+   global minSpeed
+   global maxSpeed
+   global speedScale
+
+   minSpeed = rospy.get_param('min_speed', 0)
+   maxSpeed = rospy.get_param('max_speed', 1)
+   speedScale = rospy.get_param('speedScale', 0.5)
 
    ns = Namespace()  
    ns.goal = None
