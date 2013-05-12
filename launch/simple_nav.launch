@@ -1,3 +1,8 @@
 <launch>
-   <node name="navigator" pkg="mosaic_navigation" type="simple_nav.py" />
+   <node name="navigator" pkg="mosaic_navigation" type="simple_nav.py">
+      <remap from="state" to="/ground_truth/state"/>
+      <remap from="reset" to="/ardrone/reset"/>
+      <remap from="land" to="/ardrone/land"/>
+      <remap from="control" to="/cmd_vel"/>
+   </node>
 </launch>
