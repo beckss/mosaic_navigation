@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 import rospy
+import numpy as np
 from std_msgs.msg import String
+from std_msgs.msg import Empty
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Pose
 from threading import Lock
+
+# Empty class used for managing variable scope
+class Namespace: pass
 
 state_lock = Lock()
 state = None
@@ -19,7 +28,17 @@ def goal_callback(msg):
    rospy.loginfo(rospy.get_name() + " received new goal: %s" % msg)
    with goal_lock:
       global goal
-      goal = msg
+      pos = msg.position
+      att = msg.orientation
+      goal = Namespace()
+      goal.position = np.array([att.x, att.y, att.z, att.w])
+      goal.orientation = np.array([pos.x, pos.y, pos.z])
+
+def reset_callback(msg):
+   rospy.loginfo(rospy.get_name() + " UAV reset requested - setting goal to none.")
+   with goal_lock:
+      global goal
+      goal = None
 
 def land_callback(msg):
    rospy.loginfo(rospy.get_name() + " UAV land requested - setting goal to none.")
@@ -29,20 +48,23 @@ def land_callback(msg):
 
 # Tells the UAV to hold at its current position
 def stop_uav(pub):
-   pass
+   zero = Vector3(0,0,0)
+   msg = Twist()
+   msg.linear = zero
+   msg.angular = zero
+   pub.publish(msg)
    
 # Tells the UAV to move toward the current goal
 def move_uav(pub,curState,curGoal):
    pass
 
-class Namespace: pass
-
 def simple_nav():
-   pub = rospy.Publisher('control', String)
+   pub = rospy.Publisher('control', Twist)
    rospy.init_node('simple_nav')
-   rospy.Subscriber("state", String, state_callback)
-   rospy.Subscriber("goal", String, goal_callback)
-   rospy.Subscriber("land", String, land_callback)
+   rospy.Subscriber("state", Odometry, state_callback)
+   rospy.Subscriber("goal", Pose, goal_callback)
+   rospy.Subscriber("land", Empty, land_callback)
+   rospy.Subscriber("reset", Empty, reset_callback)
 
    ns = Namespace()  
    ns.goal = None
@@ -69,6 +91,10 @@ def simple_nav():
          move_uav(pub,ns.state,ns.goal)
 
       rospy.sleep(1.0)
+
+   rospy.loginfo("Controlling is shutting down.")
+   rospy.loginfo("Stopping UAV.")
+   stop_uav(pub)
 
 if __name__ == '__main__':
    try:
