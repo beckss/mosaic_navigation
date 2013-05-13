@@ -1,4 +1,4 @@
-float64	latitude_degrees
-float64	longitude_degrees 
+float64 latitude_degrees
+float64 longitude_degrees 
 float64 altitude_metres
 float64 yaw_degrees

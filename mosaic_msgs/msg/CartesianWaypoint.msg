@@ -1,4 +1,4 @@
-float64	north_metres
-float64	east_metres
+float64 north_metres
+float64 east_metres
 float64 height_metres
 float64 yaw_degrees
