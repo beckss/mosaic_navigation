@@ -1,0 +1,5 @@
+Header header
+--
+uint8 status   # == OK if successful, FAIL otherwise
+uint8 OK   = 0
+uint8 FAIL = 1
